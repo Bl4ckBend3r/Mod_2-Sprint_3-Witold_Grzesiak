@@ -88,3 +88,15 @@
     background-color: #0056b3;
   }
   
+  .error {
+    color: #ff4d4d;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .inputError {
+    border: 2px solid #ff4d4d !important;
+    outline: none;
+  }
+  
