@@ -1,34 +1,48 @@
 .formContainer {
     background-color: #121212;
     color: #e6f4ea;
-    height: 100vh;
+    min-height: 100vh;
     padding: 2rem;
     font-family: "Segoe UI", sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    align-items: flex-start;
+    gap: 4rem;
+    flex-wrap: wrap;
+    box-sizing: border-box;
   }
   
-  .heading {
-    text-align: center;
+
+  .formIntro {
+    flex: 1;
+    max-width: 500px;
+    padding-top: 2rem;
+  }
+  
+  .formIntro h1 {
     font-size: 2rem;
-    margin-bottom: 2rem;
     color: #28e47c;
+    margin-bottom: 1rem;
   }
   
+  .formIntro p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #ccc;
+  }
+  
+
   .formCard {
+    flex: 1;
+    width: 100%;
+    max-width: 600px;
     background-color: #1e1e1e;
     border-radius: 20px;
     padding: 2rem;
-    width: 100%;
-    max-width: 500px;
-    position: relative;
-    box-shadow: 
-      10px 0 15px rgba(0, 255, 130, 0.3),   
-      0 10px 15px rgba(0, 255, 130, 0.3);   
+    box-shadow:
+      10px 0 15px rgba(0, 255, 130, 0.3),
+      0 10px 15px rgba(0, 255, 130, 0.3);
   }
-  
   
   .sectionTitle {
     color: #ffb347;
@@ -36,67 +50,119 @@
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .label {
     margin-bottom: 0.3rem;
     display: block;
     color: #ddd;
   }
   
-  .input {
-    background-color: #2d2d2d;
-    border: none;
-    border-radius: 6px;
-    padding: 0.8rem 1rem;
-    margin: 0.5rem 0;
-    color: #fff;
+  .input,
+  .selectBox {
     width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #2d2d2d;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 6px;
+    margin-bottom: 1rem;
     box-sizing: border-box;
   }
   
-  
   .selectBox {
-    width: 100%;
     height: 6rem;
-    background-color: #2d2d2d;
-    color: #fff;
-    border-radius: 6px;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    border: none;
   }
-  
-  .radioGroup {
+
+  .radioGroup,
+  .checkboxGroup {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1rem;
   }
   
-  .submitButton {
-    margin-top: 2rem;
-    padding: 0.8rem 1.5rem;
-    background-color: #007bff;
-    color: #fff;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+  .radioGroup label,
+  .checkboxGroup label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #eee;
   }
   
-  .submitButton:hover {
-    background-color: #0056b3;
-  }
-  
+
   .error {
     color: #ff4d4d;
     font-size: 0.85rem;
-    margin-top: 0.2rem;
-    margin-bottom: 0.6rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
   }
   
   .inputError {
     border: 2px solid #ff4d4d !important;
     outline: none;
+  }
+  
+
+  .experienceRow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+
+  .addButton,
+  .removeButton,
+  .submitButton {
+    padding: 0.6rem 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .addButton {
+    background-color: #444cf7;
+    color: white;
+    margin-bottom: 1rem;
+  }
+  
+  .addButton:hover {
+    background-color: #2c2cef;
+  }
+  
+  .removeButton {
+    background-color: #ff4d4d;
+    color: white;
+    width: fit-content;
+  }
+  
+  .removeButton:hover {
+    background-color: #d63031;
+  }
+  
+  .submitButton {
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .submitButton:hover {
+    background-color: #0062cc;
+  }
+  
+
+  @media (max-width: 768px) {
+    .formContainer {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .formIntro {
+      text-align: center;
+      padding: 0;
+    }
   }
   
