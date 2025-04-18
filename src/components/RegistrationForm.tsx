@@ -1,23 +1,11 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registrationSchema } from "../schema/registrationSchema";
+import { z } from "zod";
 import React, { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import styles from "../styles/Form.module.css";
 
-interface ExperienceEntry {
-  tech: string;
-  level: string;
-}
-
-interface FormState {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  mode: string;
-  technologies: string[];
-  cv: File | null;
-  hasExperience: boolean;
-  experience: ExperienceEntry[];
-}
+type FormState = z.infer<typeof registrationSchema>;
 
 export default function RegistrationForm() {
   const {
@@ -26,34 +14,37 @@ export default function RegistrationForm() {
     handleSubmit,
     watch,
     setValue,
-    getValues,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormState>({
+    resolver: zodResolver(registrationSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
       phone: "",
-      mode: "",
+      mode: "stationary",
       technologies: [],
       cv: null,
       hasExperience: false,
-      experience: []
-    }
+      experience: [],
+    },
   });
 
+  const hasExperience = watch("hasExperience");
   const [cvError, setCvError] = useState("");
   const [experienceError, setExperienceError] = useState("");
-  const hasExperience = watch("hasExperience");
+  const [showModal, setShowModal] = useState(false);
+  const [submittedData, setSubmittedData] = useState<FormState | null>(null);
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "experience"
+    name: "experience",
   });
 
   const onSubmit = (data: FormState) => {
     const validCv =
-      data.cv instanceof File && ["image/jpeg", "image/png"].includes(data.cv.type);
+      data.cv instanceof File &&
+      ["image/jpeg", "image/png"].includes(data.cv.type);
 
     if (!validCv) {
       setCvError("Załącz plik CV w formacie JPEG lub PNG");
@@ -62,15 +53,15 @@ export default function RegistrationForm() {
 
     if (data.hasExperience && data.experience.length === 0) {
       setExperienceError(
-        "Gdy zaznaczono doświadczenie w programowaniu, lista doświadczeń nie może być pusta."
+        "Gdy zaznaczono doświadczenie, dodaj przynajmniej jedną pozycję."
       );
       return;
     }
 
     setCvError("");
     setExperienceError("");
-    console.log("Dane przesłane:", data);
-    alert("Zgłoszenie zostało wysłane!");
+    setSubmittedData(data);
+    setShowModal(true);
   };
 
   return (
@@ -79,68 +70,72 @@ export default function RegistrationForm() {
       <div className={styles.formIntro}>
         <h1>Formularz zgłoszeniowy na kurs programowania</h1>
         <p>
-          Chcesz nauczyć się Reacta, Node.js, HTML, CSS czy Next.js? Wypełnij formularz po prawej
-          stronie i dołącz do naszej społeczności programistów! 🚀<br />
-          Nasze kursy są dostępne online i stacjonarnie – wybierz co ci pasuje i zacznij już dziś!
+          Chcesz nauczyć się Reacta, Node.js, HTML, CSS czy Next.js? Wypełnij
+          formularz po prawej stronie i dołącz do naszej społeczności
+          programistów! 🚀
         </p>
       </div>
 
-      {/* Prawa strona – formularz */}
+      {/* Formularz */}
       <form className={styles.formCard} onSubmit={handleSubmit(onSubmit)}>
         <h2 className={styles.sectionTitle}>Dane osobowe</h2>
         <input
-          className={`${styles.input} ${errors.firstName ? styles.inputError : ""}`}
-          {...register("firstName", { required: true, minLength: 3 })}
+          className={`${styles.input} ${
+            errors.firstName ? styles.inputError : ""
+          }`}
+          {...register("firstName")}
           placeholder="Imię"
         />
-        {errors.firstName && <p className={styles.error}>Imię musi mieć co najmniej 3 znaki</p>}
+        {errors.firstName && (
+          <p className={styles.error}>{errors.firstName.message}</p>
+        )}
 
         <input
-          className={`${styles.input} ${errors.lastName ? styles.inputError : ""}`}
-          {...register("lastName", { required: true, minLength: 3 })}
+          className={`${styles.input} ${
+            errors.lastName ? styles.inputError : ""
+          }`}
+          {...register("lastName")}
           placeholder="Nazwisko"
         />
-        {errors.lastName && <p className={styles.error}>Nazwisko musi mieć co najmniej 3 znaki</p>}
+        {errors.lastName && (
+          <p className={styles.error}>{errors.lastName.message}</p>
+        )}
 
         <input
           className={`${styles.input} ${errors.email ? styles.inputError : ""}`}
-          {...register("email", {
-            required: true,
-            pattern: /^\S+@\S+\.\S+$/
-          })}
+          {...register("email")}
           placeholder="E-mail"
         />
-        {errors.email && <p className={styles.error}>Wprowadź poprawny adres e-mail</p>}
+        {errors.email && <p className={styles.error}>{errors.email.message}</p>}
 
         <input
           className={`${styles.input} ${errors.phone ? styles.inputError : ""}`}
-          {...register("phone", {
-            required: true,
-            pattern: /^[0-9]{9}$/
-          })}
+          {...register("phone")}
           placeholder="Numer telefonu"
         />
-        {errors.phone && <p className={styles.error}>Numer telefonu musi mieć 9 cyfr</p>}
+        {errors.phone && <p className={styles.error}>{errors.phone.message}</p>}
 
         <h2 className={styles.sectionTitle}>Preferencje kursu</h2>
         <label className={styles.label}>Wybierz formę nauki:</label>
         <div className={styles.radioGroup}>
           <label>
-            <input type="radio" value="stationary" {...register("mode", { required: true })} />
+            <input type="radio" value="stationary" {...register("mode")} />
             Stacjonarna
           </label>
           <label>
-            <input type="radio" value="online" {...register("mode", { required: true })} />
+            <input type="radio" value="online" {...register("mode")} />
             Online
           </label>
         </div>
-        {errors.mode && <p className={styles.error}>Wybierz formę nauki</p>}
+        {errors.mode && <p className={styles.error}>{errors.mode.message}</p>}
 
         <label className={styles.label}>Wybierz preferowane technologie:</label>
         <select
           multiple
-          className={`${styles.selectBox} ${errors.technologies ? styles.inputError : ""}`}
-          {...register("technologies", { validate: (value) => value.length > 0 })}
+          className={`${styles.selectBox} ${
+            errors.technologies ? styles.inputError : ""
+          }`}
+          {...register("technologies")}
         >
           <option value="React">React</option>
           <option value="Node.js">Node.js</option>
@@ -149,7 +144,7 @@ export default function RegistrationForm() {
           <option value="Next.js">Next.js</option>
         </select>
         {errors.technologies && (
-          <p className={styles.error}>Wybierz przynajmniej jedną technologię</p>
+          <p className={styles.error}>{errors.technologies.message}</p>
         )}
 
         <h2 className={styles.sectionTitle}>Dodaj swoje CV</h2>
@@ -203,14 +198,7 @@ export default function RegistrationForm() {
                 >
                   <option value="">Wybierz poziom</option>
                   <option value="1">1 – Początkujący</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
                   <option value="5">5 – Średniozaawansowany</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
                   <option value="10">10 – Ekspert</option>
                 </select>
 
@@ -224,7 +212,9 @@ export default function RegistrationForm() {
               </div>
             ))}
 
-            {experienceError && <p className={styles.error}>{experienceError}</p>}
+            {experienceError && (
+              <p className={styles.error}>{experienceError}</p>
+            )}
           </>
         )}
 
@@ -232,6 +222,62 @@ export default function RegistrationForm() {
           Wyślij zgłoszenie
         </button>
       </form>
+
+      {showModal && submittedData && (
+  <div className={styles.modalOverlay}>
+    <div className={styles.modal}>
+      <h2 className={styles.modalTitle}>Dane z formularza</h2>
+
+      <div className={styles.modalSection}>
+        <h3 className={styles.modalSubTitle}>Dane osobowe:</h3>
+        <p>Imię: {submittedData.firstName}</p>
+        <p>Nazwisko: {submittedData.lastName}</p>
+        <p>Email: {submittedData.email}</p>
+        <p>Telefon: {submittedData.phone}</p>
+      </div>
+
+      {submittedData.hasExperience && (
+        <div className={styles.modalSection}>
+          <h3 className={styles.modalSubTitle}>Doświadczenie w programowaniu:</h3>
+          <ul>
+            {submittedData.experience.map((exp, index) => (
+              <li key={index}>
+                Technologia: {exp.tech} / poziom: {exp.level}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className={styles.modalSection}>
+        <h3 className={styles.modalSubTitle}>Preferencje kursu:</h3>
+        <p>Typ kursu: {submittedData.mode === "online" ? "Online" : "Stacjonarny"}</p>
+        <p>Preferowane technologie:</p>
+        <ul>
+          {submittedData.technologies.map((tech, index) => (
+            <li key={index}>{tech}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className={styles.modalSection}>
+        <h3 className={styles.modalSubTitle}>Curriculum vitae:</h3>
+        {submittedData.cv && (
+          <img
+            src={URL.createObjectURL(submittedData.cv)}
+            alt="CV"
+            className={styles.cvImage}
+          />
+        )}
+      </div>
+
+      <button onClick={() => setShowModal(false)} className={styles.submitButton}>
+        Zamknij
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

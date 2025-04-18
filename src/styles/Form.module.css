@@ -211,3 +211,56 @@
     cursor: pointer;
   }
   
+  .modalTitle {
+    text-align: center;
+    font-size: 2rem;
+    color: #28e47c;
+    margin-bottom: 1.5rem;
+  }
+  
+  .modalSubTitle {
+    color: #ffb347;
+    font-weight: bold;
+    margin-top: 1rem;
+  }
+  
+  .modalSection {
+    margin-bottom: 1.5rem;
+  }
+  
+  .cvImage {
+    max-width: 100px;
+    height: auto;
+    border: 2px solid white;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+  }
+  @media (max-width: 768px) {
+    .formContainer {
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+  
+    .formIntro {
+      text-align: center;
+      max-width: 100%;
+    }
+  
+    .formCard {
+      width: 100%;
+      max-width: 100%;
+    }
+  
+    .modal {
+      width: 95%;
+      padding: 1.2rem;
+    }
+  
+    .modal pre {
+      font-size: 0.85rem;
+    }
+  }
+    
+
+  
